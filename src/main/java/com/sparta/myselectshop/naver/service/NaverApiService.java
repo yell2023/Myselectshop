@@ -5,6 +5,7 @@ import com.sparta.myselectshop.naver.dto.ItemDto;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,19 @@ import java.util.List;
 public class NaverApiService {
 
     private final RestTemplate restTemplate;
+    private final String clientId;
+    private final String clientSecret;
 
-    public NaverApiService(RestTemplateBuilder builder) {
+    public NaverApiService(RestTemplateBuilder builder,
+                           @Value("${naver.client-id}") String clientId,
+                           @Value("${naver.client-secret}") String clientSecret) {
         this.restTemplate = builder.build();
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
     }
 
     public List<ItemDto> searchItems(String query) {
+
         // 요청 URL 만들기
         URI uri = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com")
@@ -40,8 +48,8 @@ public class NaverApiService {
 
         RequestEntity<Void> requestEntity = RequestEntity
                 .get(uri)
-                .header("X-Naver-Client-Id", "u4FgmENCLMU_X1eFcSye")
-                .header("X-Naver-Client-Secret", "WmiTyv8dsP")
+                .header("X-Naver-Client-Id", clientId)
+                .header("X-Naver-Client-Secret", clientSecret)
                 .build();
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
